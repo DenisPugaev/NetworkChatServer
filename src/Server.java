@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
-
+// Created by DenisPugaev
 public class Server {
     private static final int SERVER_PORT = 8186;
     private static DataInputStream in;
