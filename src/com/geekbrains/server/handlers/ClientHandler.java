@@ -9,6 +9,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+
 public class ClientHandler {
     private static final String AUTH_CMD_PREFIX = "/auth"; // + login + password
     private static final String AUTHOK_CMD_PREFIX = "/authok"; // + username
@@ -83,7 +84,7 @@ public class ClientHandler {
                 return false;
             }
 
-            out.writeUTF(AUTHOK_CMD_PREFIX + " Вы вошли как: " + username);
+            out.writeUTF(AUTHOK_CMD_PREFIX +" "+ username + " авторизировался!" );
             myServer.subscribe(this);
             System.out.println("Пользователь " + username + " подключился к чату");
             return true;
@@ -93,27 +94,33 @@ public class ClientHandler {
         }
     }
 
-    private void readMessage() throws IOException {
+    private  void readMessage() throws IOException {
         while (true) {
 
-                String message = in.readUTF();
-                System.out.println(username + " написал: " + message);
-                String typeMessage = message.split("\\s+")[0];
+            String message = in.readUTF();
+            System.out.println(username + " написал: " + message);
+            String typeMessage = message.split("\\s+")[0];
 
-                switch (typeMessage) {
-                    case STOP_SERVER_CMD_PREFIX -> myServer.stop();
-                    case END_CLIENT_CMD_PREFIX -> closeConnection();
-                    case PRIVATE_MSG_CMD_PREFIX -> {
-                        String[] parts = message.split("\\s+");
-                        String recipient = parts[1];
-                        String privateMsg = parts[2];
-                        myServer.privateMessage(this, privateMsg, recipient);
-                    }
-                    default -> myServer.broadcastMessage(this, message);
-                }
+            switch (typeMessage) {
+                case STOP_SERVER_CMD_PREFIX -> myServer.stop();
+                case END_CLIENT_CMD_PREFIX -> closeConnection();
+                case PRIVATE_MSG_CMD_PREFIX -> privateMessage(message);
+
+                default -> myServer.broadcastMessage(this, message);
+            }
 
 
         }
+    }
+
+    private synchronized void privateMessage(String messageAndNick) throws IOException {
+        String fullMessage = messageAndNick.trim();
+        int indexOfFirstSpace = fullMessage.indexOf(" ");
+        String prefix = fullMessage.substring(0, indexOfFirstSpace);
+        int indexOfSecondSpace = fullMessage.indexOf(" ", indexOfFirstSpace + 1);
+        String nickTo = fullMessage.substring(indexOfFirstSpace + 1, indexOfSecondSpace);
+        String onlyMessage = fullMessage.substring(indexOfSecondSpace + 1);
+        myServer.sendPrivateMessage(this, onlyMessage, nickTo);
     }
 
 
@@ -123,8 +130,12 @@ public class ClientHandler {
         myServer.unSubscribe(this);
     }
 
-    public void sendMessage(String sender, String message) throws IOException {
-        out.writeUTF(String.format("%s %s %s", CLIENT_MSG_CMD_PREFIX, sender, message));
+    public synchronized void sendMessage(String sender, String message) throws IOException {
+        out.writeUTF(sender+" "+message);
+    }
+
+    public synchronized void sendPrivateMessage(String message) throws IOException {
+        out.writeUTF(message);
     }
 
     public String getUsername() {

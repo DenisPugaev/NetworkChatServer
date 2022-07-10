@@ -1,8 +1,6 @@
 package com.geekbrains;
 
 
-
-
 import com.geekbrains.server.MyServer;
 
 import java.io.FileReader;
