@@ -84,7 +84,7 @@ public class ClientHandler {
                 return false;
             }
 
-            out.writeUTF(AUTHOK_CMD_PREFIX +" "+ username + " авторизировался!" );
+            out.writeUTF(AUTHOK_CMD_PREFIX + " " + username + " авторизировался!");
             myServer.subscribe(this);
             System.out.println("Пользователь " + username + " подключился к чату");
             return true;
@@ -94,7 +94,7 @@ public class ClientHandler {
         }
     }
 
-    private  void readMessage() throws IOException {
+    private void readMessage() throws IOException {
         while (true) {
 
             String message = in.readUTF();
@@ -131,7 +131,7 @@ public class ClientHandler {
     }
 
     public synchronized void sendMessage(String sender, String message) throws IOException {
-        out.writeUTF(sender+" "+message);
+        out.writeUTF(sender + " " + message);
     }
 
     public synchronized void sendPrivateMessage(String message) throws IOException {

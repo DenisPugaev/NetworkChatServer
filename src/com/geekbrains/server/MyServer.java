@@ -88,7 +88,7 @@ public class MyServer {
         }
     }
 
-    public synchronized void sendPrivateMessage(ClientHandler sender, String message,String nickTo) throws IOException {
+    public synchronized void sendPrivateMessage(ClientHandler sender, String message, String nickTo) throws IOException {
         for (ClientHandler c : clients) {
             if (c.getUsername().equals(nickTo)) {
                 c.sendPrivateMessage("От: " + sender.getUsername() + " Сообщение: " + message);
@@ -96,7 +96,7 @@ public class MyServer {
                 return;
             }
         }
-        sender.sendMessage("Невозможно отправить сообщение пользователю: ",nickTo);
+        sender.sendMessage("Невозможно отправить сообщение пользователю: ", nickTo);
     }
 }
 
