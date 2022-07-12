@@ -9,12 +9,12 @@ import java.util.List;
 public class SimpleAuthenticationServiceImpl implements AuthenticationService {
 
     private static final List<User> clients = List.of(
-            new User("a", "1111", "mrDuck"),
-            new User("b", "2222", "Cat"),
-            new User("c", "3333", "Гендальф_Серый"),
-            new User("d", "4444", "Super_Mario"),
-            new User("e", "5555", "Bender"),
-            new User("f", "6666", "Super_Sonic")
+            new User("duck", "1", "mrDuck"),
+            new User("cat", "1", "Martin_Shatun"),
+            new User("gus", "1", "Важный_Гусь"),
+            new User("perec", "1", "Perchik"),
+            new User("bender", "1", "Bender"),
+            new User("pomidor", "1", "DonPomidor")
     );
 
     @Override

@@ -9,7 +9,8 @@ import java.util.Properties;
 
 public class ServerApp {
 
-    private static final int DEFAULT_PORT = 8086;
+    private static final int DEFAULT_PORT = 8888;
+    private static int port;
     private static String configsFile = "src/resources/configs/application-dev.properties";
 
     public static void main(String[] args) {
@@ -20,12 +21,13 @@ public class ServerApp {
             throw new RuntimeException(e);
         }
 
-        int port;
+
         try {
             port = Integer.parseInt(properties.getProperty("server.port"));
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            port = DEFAULT_PORT;
+            System.out.println("Ошибка подключения к сереру!");
+//            port = DEFAULT_PORT;
         }
 
         try {

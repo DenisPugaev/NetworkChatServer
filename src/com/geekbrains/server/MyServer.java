@@ -88,15 +88,20 @@ public class MyServer {
         }
     }
 
-    public synchronized void sendPrivateMessage(ClientHandler sender, String message, String nickTo) throws IOException {
-        for (ClientHandler c : clients) {
-            if (c.getUsername().equals(nickTo)) {
-                c.sendPrivateMessage("От: " + sender.getUsername() + " Сообщение: " + message);
-                sender.sendPrivateMessage("Пользователю: " + nickTo + " Сообщение: " + message);
-                return;
+    public synchronized void sendPrivateMessage(ClientHandler sender, String recipient, String privateMessage) throws IOException {
+        for (ClientHandler client : clients) {
+            if (client.getUsername().equals(recipient)) {
+                client.sendMessage(sender.getUsername(), privateMessage, true);
             }
         }
-        sender.sendMessage("Невозможно отправить сообщение пользователю: ", nickTo);
+    }
+    public synchronized void broadcastServerMessage(ClientHandler sender, String message) throws IOException {
+        for (ClientHandler client : clients) {
+            if (client == sender) {
+                continue;
+            }
+            client.sendServerMessage(message);
+        }
     }
 }
 
