@@ -25,7 +25,7 @@ public class MyServer {
 
 
     public void start() {
-        System.out.println("СЕРЕР СТАРТОВАЛ!");
+        System.out.println("СЕРВЕР СТАРТОВАЛ!");
         System.out.println("________________");
 
         try {
@@ -45,16 +45,18 @@ public class MyServer {
         processClientConnection(socket);
     }
 
-    private void processClientConnection(Socket socket) throws IOException {
+    private void processClientConnection(Socket socket) {
         ClientHandler handler = new ClientHandler(this, socket);
         handler.handle();
     }
 
-    public synchronized void subscribe(ClientHandler handler) {
+    public synchronized void subscribe(ClientHandler handler) throws IOException {
         clients.add(handler);
+
     }
 
-    public synchronized void unSubscribe(ClientHandler handler) {
+
+    public synchronized void unSubscribe(ClientHandler handler) throws IOException {
         clients.remove(handler);
     }
 
@@ -81,9 +83,9 @@ public class MyServer {
 
     public void broadcastMessage(ClientHandler sender, String message) throws IOException {
         for (ClientHandler client : clients) {
-            if (client == sender) {
+          /*  if (client == sender) {
                 continue;
-            }
+            }*/
             client.sendMessage(sender.getUsername(), message);
         }
     }
@@ -95,6 +97,7 @@ public class MyServer {
             }
         }
     }
+
     public synchronized void broadcastServerMessage(ClientHandler sender, String message) throws IOException {
         for (ClientHandler client : clients) {
             if (client == sender) {
@@ -102,6 +105,26 @@ public class MyServer {
             }
             client.sendServerMessage(message);
         }
+    }
+
+    public synchronized void broadcastServerMessage(ClientHandler sender, String prefix, String message) throws IOException {
+        for (ClientHandler client : clients) {
+//            if (client == sender) {
+//                continue;
+//            }
+            client.sendServerMessage(prefix, message);
+            System.out.print(prefix + " ");
+            System.out.println(message);
+        }
+    }
+
+    public synchronized String getUserNames() {
+        StringBuilder builder = new StringBuilder();
+        for (ClientHandler client : clients) {
+            builder.append(client.getUsername());
+            builder.append(" ");
+        }
+        return builder.toString();
     }
 }
 

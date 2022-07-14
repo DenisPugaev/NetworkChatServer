@@ -18,7 +18,7 @@ public class ServerApp {
         try {
             properties.load(new FileReader(configsFile));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
 
