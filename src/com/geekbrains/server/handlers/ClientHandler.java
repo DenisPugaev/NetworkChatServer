@@ -3,16 +3,13 @@ package com.geekbrains.server.handlers;
 
 import com.geekbrains.server.MyServer;
 import com.geekbrains.server.services.AuthenticationService;
+import javafx.application.Platform;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 
 public class ClientHandler {
@@ -26,11 +23,11 @@ public class ClientHandler {
     private static final String END_CLIENT_CMD_PREFIX = "/end";
 
     private static final String USERS_UPDATE_PREFIX = "/updateUsers";
-    private MyServer myServer;
-    private Socket clientSocket;
+    private final MyServer myServer;
+    private final Socket clientSocket;
     private DataInputStream in;
     private DataOutputStream out;
-    private String username = "";
+    private String username = "Неавторизованный пользователь";
 
 
     public ClientHandler(MyServer myServer, Socket socket) {
@@ -47,53 +44,63 @@ public class ClientHandler {
 
 
     public void handle() {
-
-        new Thread(() -> {
+        Callable<Boolean> authCaller = () -> {
             try {
-
                 authentication();
                 String userNames = myServer.getUserNames();
-                myServer.broadcastServerMessage(this, USERS_UPDATE_PREFIX, userNames);
-                readMessage();
+                myServer.broadcastServerMessage(ClientHandler.this, USERS_UPDATE_PREFIX, userNames);
             } catch (IOException e) {
-
                 try {
-                    myServer.broadcastServerMessage(this, "Пользователь " + username + " отключился от чата");
-                    myServer.unSubscribe(this);
+                    myServer.broadcastServerMessage(ClientHandler.this, "Пользователь " + username + " отключился от чата");
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
                 e.printStackTrace();
-            } catch (InterruptedException e){
-                e.printStackTrace();
-                System.out.println("Неавторизованный пользователь отключен по таймауту");
             }
-        }).start();
+            return true;
+        };
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Boolean> future = executor.submit(authCaller);
+        try {
+            future.get(120, TimeUnit.SECONDS);
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            future.cancel(true);
+            try {
+                closeConnection();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        executor.shutdownNow();
+        if (username == null) return;
+        Runnable workRunner = () -> {
+            try {
+                readMessage();
+            } catch (IOException e) {
+                try {
+                    myServer.broadcastServerMessage(ClientHandler.this, "Пользователь " + username + " отключился от чата");
+                    myServer.unSubscribe(ClientHandler.this);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                e.printStackTrace();
+            }
+        };
+        new Thread(workRunner).start();
     }
 
-    public void authentication() throws IOException, InterruptedException {
-        /*Засечь отсчет времени отсюда и остановить в цикле через 120 сек*/
-        long startTime = System.currentTimeMillis();
+    private void authentication() throws IOException {
         while (true) {
-
             String message = in.readUTF();
-
-
             if (message.startsWith(AUTH_CMD_PREFIX)) {
                 boolean isSuccessAuth = processAuthentication(message);
                 if (isSuccessAuth) {
                     break;
                 }
-            }
-            if (!message.startsWith(AUTH_CMD_PREFIX)) {
+            } else {
                 out.writeUTF(AUTHERR_CMD_PREFIX + " Неверная команда аутентификации");
                 System.out.println("Неверная команда аутентификации");
             }
-            long diff = System.currentTimeMillis()-startTime;
-            if(diff> 12_000L){ // не сработал добавить в другое место!
-                closeConnection();
-            }
-           throw new InterruptedException();
         }
     }
 
@@ -134,7 +141,6 @@ public class ClientHandler {
     }
 
     public void readMessage() throws IOException {
-
         while (true) {
             String message = in.readUTF();
 
@@ -169,7 +175,6 @@ public class ClientHandler {
                 }
                 default -> System.out.println("Неверная команда");
             }
-
         }
     }
 
@@ -201,18 +206,6 @@ public class ClientHandler {
         return username;
     }
 
-
-    public void waitExit() throws IOException {
-        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-
-        service.schedule(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        }, 120, TimeUnit.SECONDS);
-
-    }
 }
 
 

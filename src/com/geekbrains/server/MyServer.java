@@ -50,7 +50,7 @@ public class MyServer {
         handler.handle();
     }
 
-    public synchronized void subscribe(ClientHandler handler) throws IOException {
+    public synchronized void subscribe(ClientHandler handler) {
         clients.add(handler);
 
     }
@@ -109,12 +109,8 @@ public class MyServer {
 
     public synchronized void broadcastServerMessage(ClientHandler sender, String prefix, String message) throws IOException {
         for (ClientHandler client : clients) {
-//            if (client == sender) {
-//                continue;
-//            }
             client.sendServerMessage(prefix, message);
-            System.out.print(prefix + " ");
-            System.out.println(message);
+            System.out.println(prefix + " " + message);
         }
     }
 
