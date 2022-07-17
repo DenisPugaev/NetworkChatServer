@@ -1,10 +1,7 @@
 package com.geekbrains.server.handlers;
 
-
 import com.geekbrains.server.MyServer;
 import com.geekbrains.server.services.AuthenticationService;
-import javafx.application.Platform;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,6 +10,8 @@ import java.util.concurrent.*;
 
 
 public class ClientHandler {
+
+
     private static final String AUTH_CMD_PREFIX = "/auth"; // + login + password
     private static final String AUTHOK_CMD_PREFIX = "/authok"; // + username
     private static final String AUTHERR_CMD_PREFIX = "/autherr"; // + error message
@@ -166,12 +165,11 @@ public class ClientHandler {
                     String privateMessage = privateMessageParts[2];
 
                     myServer.sendPrivateMessage(this, recipient, privateMessage);
+
+
                 }
                 case SERVER_MSG_CMD_PREFIX -> {
-//                    String[] messageParts = message.split("\\s+", 2);
-//                    String usernameUpdate = messageParts[2];
-//                    myServer.broadcastServerMessage( this,usernameUpdate);
-//                    //??????
+//                    /пока кейс не пригодился.
                 }
                 default -> System.out.println("Неверная команда");
             }
@@ -185,10 +183,12 @@ public class ClientHandler {
 
     public void sendServerMessage(String message) throws IOException {
         out.writeUTF(String.format("%s %s", SERVER_MSG_CMD_PREFIX, message));
+
     }
 
     public void sendServerMessage(String prefix, String message) throws IOException {
         out.writeUTF(String.format("%s %s", prefix, message));
+
     }
 
     public void sendMessage(String sender, String message, Boolean isPrivate) throws IOException {
@@ -200,10 +200,13 @@ public class ClientHandler {
 
     public void sendMessage(String sender, String message) throws IOException {
         sendMessage(sender, message, false);
+
+
     }
 
     public String getUsername() {
         return username;
+
     }
 
 }

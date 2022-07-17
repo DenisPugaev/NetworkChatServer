@@ -1,8 +1,9 @@
 package com.geekbrains.server;
-
+//Created by DenisPugaev
 import com.geekbrains.server.handlers.ClientHandler;
 import com.geekbrains.server.services.AuthenticationService;
 import com.geekbrains.server.services.impl.SimpleAuthenticationServiceImpl;
+
 
 
 import java.io.IOException;
@@ -11,6 +12,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 
+/*
+Задача:
+         1. Разобраться с кодом.
+        2. Сделать обновление списка пользователей в чате при отключении и подключении клиента
+        *3. Добавить отключение неавторизованных пользователей по таймауту (120 сек. ждём после подключения клиента, и
+        если он не авторизовался за это время, закрываем соединение).*/
 public class MyServer {
 
     private final ServerSocket serverSocket;
@@ -27,6 +34,7 @@ public class MyServer {
     public void start() {
         System.out.println("СЕРВЕР СТАРТОВАЛ!");
         System.out.println("________________");
+
 
         try {
             while (true) {
@@ -87,6 +95,7 @@ public class MyServer {
                 continue;
             }*/
             client.sendMessage(sender.getUsername(), message);
+
         }
     }
 
