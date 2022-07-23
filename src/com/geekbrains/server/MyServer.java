@@ -3,7 +3,7 @@ package com.geekbrains.server;
 import com.geekbrains.server.handlers.ClientHandler;
 import com.geekbrains.server.services.AuthenticationService;
 import com.geekbrains.server.services.impl.SimpleAuthenticationServiceImpl;
-
+import com.geekbrains.server.services.impl.SqlAuthenticationServiceImpl;
 
 
 import java.io.IOException;
@@ -26,7 +26,9 @@ public class MyServer {
 
     public MyServer(int port) throws IOException {
         serverSocket = new ServerSocket(port);
-        authenticationService = new SimpleAuthenticationServiceImpl();
+//        authenticationService = new SimpleAuthenticationServiceImpl();
+        authenticationService = new SqlAuthenticationServiceImpl();
+
         clients = new ArrayList<>();
     }
 
@@ -69,6 +71,7 @@ public class MyServer {
     }
 
     public AuthenticationService getAuthenticationService() {
+
         return authenticationService;
     }
 

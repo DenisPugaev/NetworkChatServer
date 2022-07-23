@@ -31,7 +31,11 @@
             <artifactId>javafx-graphics</artifactId>
             <version>18</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14 -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.36.0.3</version>
+        </dependency>
     </dependencies>
 
 </project>

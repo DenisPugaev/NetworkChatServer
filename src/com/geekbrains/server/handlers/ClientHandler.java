@@ -2,10 +2,14 @@ package com.geekbrains.server.handlers;
 
 import com.geekbrains.server.MyServer;
 import com.geekbrains.server.services.AuthenticationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.concurrent.*;
 
 
@@ -27,9 +31,11 @@ public class ClientHandler {
     private DataInputStream in;
     private DataOutputStream out;
     private String username = "Неавторизованный пользователь";
+    private Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
 
     public ClientHandler(MyServer myServer, Socket socket) {
+
 
         this.myServer = myServer;
         clientSocket = socket;
@@ -116,8 +122,14 @@ public class ClientHandler {
         String password = parts[2];
 
         AuthenticationService auth = myServer.getAuthenticationService();
+        log.info("getAuthenticationService -"+auth);
+        try {
+            username = auth.getUsernameByLoginAndPassword(login, password);
+            log.info("Имя пользователя которое пришло в CLIENT HANDLER -"+username);
 
-        username = auth.getUsernameByLoginAndPassword(login, password);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         if (username != null) {
             if (myServer.isUsernameBusy(username)) {
@@ -142,6 +154,7 @@ public class ClientHandler {
     public void readMessage() throws IOException {
         while (true) {
             String message = in.readUTF();
+            log.info("Сообщение с клиента: "+message);
 
 
             System.out.println("message | " + username + ": " + message);

@@ -19,5 +19,8 @@
     <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:win:18" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:18" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:win:18" level="project" />
+    <orderEntry type="library" name="Maven: org.xerial:sqlite-jdbc:3.36.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
+    <orderEntry type="library" name="slf4j.jdk14" level="project" />
   </component>
 </module>
