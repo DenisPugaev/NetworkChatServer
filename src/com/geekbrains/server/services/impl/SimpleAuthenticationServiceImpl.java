@@ -26,4 +26,8 @@ public class SimpleAuthenticationServiceImpl implements AuthenticationService {
         }
         return null;
     }
+
+    @Override
+    public void updateUsernameByLogin(String login, String newUsername) {
+    }
 }

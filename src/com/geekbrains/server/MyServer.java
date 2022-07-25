@@ -1,5 +1,6 @@
 package com.geekbrains.server;
 //Created by DenisPugaev
+
 import com.geekbrains.server.handlers.ClientHandler;
 import com.geekbrains.server.services.AuthenticationService;
 import com.geekbrains.server.services.impl.SimpleAuthenticationServiceImpl;
@@ -133,6 +134,13 @@ public class MyServer {
             builder.append(" ");
         }
         return builder.toString();
+    }
+
+    public synchronized void broadcastServerMessage(String sender, String prefix, String message) throws IOException {
+        for (ClientHandler client : clients) {
+            client.sendServerMessage(prefix, message);
+            System.out.println(prefix + " " + message);
+        }
     }
 }
 

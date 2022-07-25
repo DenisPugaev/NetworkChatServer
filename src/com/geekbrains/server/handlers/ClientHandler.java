@@ -2,6 +2,7 @@ package com.geekbrains.server.handlers;
 
 import com.geekbrains.server.MyServer;
 import com.geekbrains.server.services.AuthenticationService;
+import com.geekbrains.server.services.impl.SqlAuthenticationServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,9 @@ public class ClientHandler {
     private DataOutputStream out;
     private String username = "Неавторизованный пользователь";
     private Logger log = LoggerFactory.getLogger(ClientHandler.class);
+    private AuthenticationService auth;
+    private String login;
+    private String userNames;
 
 
     public ClientHandler(MyServer myServer, Socket socket) {
@@ -52,7 +56,7 @@ public class ClientHandler {
         Callable<Boolean> authCaller = () -> {
             try {
                 authentication();
-                String userNames = myServer.getUserNames();
+                userNames = myServer.getUserNames();
                 myServer.broadcastServerMessage(ClientHandler.this, USERS_UPDATE_PREFIX, userNames);
             } catch (IOException e) {
                 try {
@@ -118,14 +122,14 @@ public class ClientHandler {
             return false;
         }
 
-        String login = parts[1];
+        login = parts[1];
         String password = parts[2];
 
-        AuthenticationService auth = myServer.getAuthenticationService();
-        log.info("getAuthenticationService -"+auth);
+        auth = myServer.getAuthenticationService();
+        log.info("getAuthenticationService -" + auth);
         try {
             username = auth.getUsernameByLoginAndPassword(login, password);
-            log.info("Имя пользователя которое пришло в CLIENT HANDLER -"+username);
+            log.info("Имя пользователя которое пришло в CLIENT HANDLER -" + username);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -154,7 +158,7 @@ public class ClientHandler {
     public void readMessage() throws IOException {
         while (true) {
             String message = in.readUTF();
-            log.info("Сообщение с клиента: "+message);
+            log.info("Сообщение с клиента: " + message);
 
 
             System.out.println("message | " + username + ": " + message);
@@ -182,7 +186,20 @@ public class ClientHandler {
 
                 }
                 case SERVER_MSG_CMD_PREFIX -> {
-//                    /пока кейс не пригодился.
+                    String[] messageParts = message.split("\\s+", 2);
+                    String newNick = messageParts[1];
+                    log.info("Новый ник - " + newNick);
+                    this.username = newNick;
+                    log.info("new username - " + this.username);
+                    try {
+                        auth.updateUsernameByLogin(login, username);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        log.error("Ошибка подключения к БД!");
+                    }
+//                    log.info("Пользователи - "+userNames);
+//                    myServer.broadcastServerMessage(newNick, USERS_UPDATE_PREFIX, userNames);
+
                 }
                 default -> System.out.println("Неверная команда");
             }
