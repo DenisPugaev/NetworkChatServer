@@ -3,8 +3,8 @@ package com.geekbrains.server;
 
 import com.geekbrains.server.handlers.ClientHandler;
 import com.geekbrains.server.services.AuthenticationService;
-import com.geekbrains.server.services.impl.SimpleAuthenticationServiceImpl;
 import com.geekbrains.server.services.impl.SqlAuthenticationServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-
+@Slf4j
 public class MyServer {
 
     private final ServerSocket serverSocket;
@@ -130,11 +130,5 @@ public class MyServer {
         return builder.toString();
     }
 
-    public synchronized void broadcastServerMessage(String sender, String prefix, String message) throws IOException {
-        for (ClientHandler client : clients) {
-            client.sendServerMessage(prefix, message);
-            System.out.println(prefix + " " + message);
-        }
-    }
 }
 

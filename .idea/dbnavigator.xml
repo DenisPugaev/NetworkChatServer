@@ -30,12 +30,6 @@
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="1232a5a9-ab37-4914-b845-132d39526e60">
       <console name="Chatusers" type="STANDARD" schema="main" session="Main" />
-      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[select
-    c.login,
-    c.password,
-    c.username
-from
-    chatusers c;]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">

@@ -2,13 +2,10 @@ package com.geekbrains.server.handlers;
 
 import com.geekbrains.server.MyServer;
 import com.geekbrains.server.services.AuthenticationService;
-import com.geekbrains.server.services.impl.SqlAuthenticationServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.concurrent.*;
@@ -58,6 +55,7 @@ public class ClientHandler {
                 authentication();
                 userNames = myServer.getUserNames();
                 myServer.broadcastServerMessage(ClientHandler.this, USERS_UPDATE_PREFIX, userNames);
+//                myServer.broadcastHistoryMessage( this, String.valueOf(readChatHistory()));
             } catch (IOException e) {
                 try {
                     myServer.broadcastServerMessage(ClientHandler.this, "Пользователь " + username + " отключился от чата");
@@ -148,6 +146,7 @@ public class ClientHandler {
 
             myServer.broadcastServerMessage(this, "Пользователь " + username + " подключился к чату");
 
+
             return true;
         } else {
             out.writeUTF(AUTHERR_CMD_PREFIX + " Неверная комбинация логина и пароля");
@@ -159,7 +158,6 @@ public class ClientHandler {
         while (true) {
             String message = in.readUTF();
             log.info("Сообщение с клиента: " + message);
-
 
             System.out.println("message | " + username + ": " + message);
 
@@ -197,9 +195,6 @@ public class ClientHandler {
                         e.printStackTrace();
                         log.error("Ошибка подключения к БД!");
                     }
-//                    log.info("Пользователи - "+userNames);
-//                    myServer.broadcastServerMessage(newNick, USERS_UPDATE_PREFIX, userNames);
-
                 }
                 default -> System.out.println("Неверная команда");
             }
@@ -230,7 +225,6 @@ public class ClientHandler {
 
     public void sendMessage(String sender, String message) throws IOException {
         sendMessage(sender, message, false);
-
 
     }
 
