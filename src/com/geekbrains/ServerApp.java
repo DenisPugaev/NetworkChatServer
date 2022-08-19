@@ -11,6 +11,7 @@ public class ServerApp {
 
     private static final int DEFAULT_PORT = 8888;
     private static int port;
+
     private static String configsFile = "src/resources/configs/application-dev.properties";
 
     public static void main(String[] args) {
