@@ -1,0 +1,7 @@
+
+14:54:11: [ INFO ] main file:start:35 - Старт Сервера!
+14:54:17: [ INFO ] main file:start:35 - Старт Сервера!
+14:54:26: [ INFO ] main file:start:35 - Старт Сервера!
+14:54:35: [ INFO ] pool-1-thread-1 file:getUsernameByLoginAndPassword:57 - Значение получено из ДБ - Martin_Shatun
+14:54:35: [ INFO ] pool-1-thread-1 file:processAuthentication:133 - Имя пользователя которое пришло в CLIENT HANDLER -Martin_Shatun
+14:54:35: [ INFO ] pool-1-thread-1 file:processAuthentication:150 - Пользователь Martin_Shatun подключился к чату
