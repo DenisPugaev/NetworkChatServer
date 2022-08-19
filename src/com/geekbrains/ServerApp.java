@@ -14,6 +14,7 @@ public class ServerApp {
 
     private static String configsFile = "src/resources/configs/application-dev.properties";
 
+
     public static void main(String[] args) {
         Properties properties = new Properties();
         try {
