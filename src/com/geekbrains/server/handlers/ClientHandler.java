@@ -2,8 +2,9 @@ package com.geekbrains.server.handlers;
 
 import com.geekbrains.server.MyServer;
 import com.geekbrains.server.services.AuthenticationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
+
+
 
 import java.io.*;
 import java.net.Socket;
@@ -29,10 +30,12 @@ public class ClientHandler {
     private DataInputStream in;
     private DataOutputStream out;
     private String username = "Неавторизованный пользователь";
-    private Logger log = LoggerFactory.getLogger(ClientHandler.class);
     private AuthenticationService auth;
     private String login;
     private String userNames;
+
+    private static Logger log = Logger.getLogger("file");
+
 
 
     public ClientHandler(MyServer myServer, Socket socket) {
@@ -55,13 +58,13 @@ public class ClientHandler {
                 authentication();
                 userNames = myServer.getUserNames();
                 myServer.broadcastServerMessage(ClientHandler.this, USERS_UPDATE_PREFIX, userNames);
-//                myServer.broadcastHistoryMessage( this, String.valueOf(readChatHistory()));
             } catch (IOException e) {
                 try {
                     myServer.broadcastServerMessage(ClientHandler.this, "Пользователь " + username + " отключился от чата");
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
+                log.error("Ошибка аутентификации!");
                 e.printStackTrace();
             }
             return true;
@@ -75,7 +78,7 @@ public class ClientHandler {
             try {
                 closeConnection();
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                log.error("Ошибка при завершении соединения!");
             }
         }
         executor.shutdownNow();
@@ -86,6 +89,7 @@ public class ClientHandler {
             } catch (IOException e) {
                 try {
                     myServer.broadcastServerMessage(ClientHandler.this, "Пользователь " + username + " отключился от чата");
+                    log.info("Пользователь " + username + " отключился от чата");
                     myServer.unSubscribe(ClientHandler.this);
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -106,7 +110,7 @@ public class ClientHandler {
                 }
             } else {
                 out.writeUTF(AUTHERR_CMD_PREFIX + " Неверная команда аутентификации");
-                System.out.println("Неверная команда аутентификации");
+                log.info("Неверная команда аутентификации");
             }
         }
     }
@@ -116,7 +120,7 @@ public class ClientHandler {
         String[] parts = message.split("\\s+");
         if (parts.length != 3) {
             out.writeUTF(AUTHERR_CMD_PREFIX + " Неверная команда аутентификации");
-            System.out.println("Неверная команда аутентификации");
+            log.info("Неверная команда аутентификации");
             return false;
         }
 
@@ -124,12 +128,12 @@ public class ClientHandler {
         String password = parts[2];
 
         auth = myServer.getAuthenticationService();
-        log.info("getAuthenticationService -" + auth);
         try {
             username = auth.getUsernameByLoginAndPassword(login, password);
             log.info("Имя пользователя которое пришло в CLIENT HANDLER -" + username);
 
         } catch (SQLException e) {
+            log.error("Ошибка получения имени пользователя!");
             e.printStackTrace();
         }
 
@@ -143,6 +147,7 @@ public class ClientHandler {
             myServer.subscribe(this);
 
             System.out.println("Пользователь " + username + " подключился к чату");
+            log.info("Пользователь " + username + " подключился к чату");
 
             myServer.broadcastServerMessage(this, "Пользователь " + username + " подключился к чату");
 
@@ -157,13 +162,13 @@ public class ClientHandler {
     public void readMessage() throws IOException {
         while (true) {
             String message = in.readUTF();
-            log.info("Сообщение с клиента: " + message);
+//            log.info("Сообщение с клиента: " + message);
 
             System.out.println("message | " + username + ": " + message);
 
             String typeMessage = message.split("\\s+")[0];
             if (!typeMessage.startsWith("/")) {
-                System.out.println("Неверный запрос");
+                log.info("Неверный запрос");
             }
 
 
@@ -188,7 +193,7 @@ public class ClientHandler {
                     String newNick = messageParts[1];
                     log.info("Новый ник - " + newNick);
                     this.username = newNick;
-                    log.info("new username - " + this.username);
+//                    log.info("new username - " + this.username);
                     try {
                         auth.updateUsernameByLogin(login, username);
                     } catch (SQLException e) {
@@ -196,7 +201,7 @@ public class ClientHandler {
                         log.error("Ошибка подключения к БД!");
                     }
                 }
-                default -> System.out.println("Неверная команда");
+                default -> log.info("Неверная команда");
             }
         }
     }

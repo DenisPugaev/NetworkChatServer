@@ -2,6 +2,9 @@ package com.geekbrains;
 
 
 import com.geekbrains.server.MyServer;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,13 +17,21 @@ public class ServerApp {
 
     private static String configsFile = "src/resources/configs/application-dev.properties";
 
+    private static Logger log = Logger.getLogger("file");
+
 
     public static void main(String[] args) {
+
+
+        PropertyConfigurator.configure("src/resources/logs/config/log4j.properties");
+
+
         Properties properties = new Properties();
         try {
             properties.load(new FileReader(configsFile));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Ошибка получения файла с настройками!");
+
         }
 
 
@@ -28,14 +39,14 @@ public class ServerApp {
             port = Integer.parseInt(properties.getProperty("server.port"));
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            System.out.println("Ошибка подключения к сереру!");
-//            port = DEFAULT_PORT;
+            log.error("Ошибка подключения к серверу!");
         }
 
         try {
             new MyServer(port).start();
         } catch (IOException e) {
             e.printStackTrace();
+            log.error("Ошибка запуска сервера!");
         }
     }
 }

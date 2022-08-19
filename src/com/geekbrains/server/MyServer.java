@@ -4,7 +4,7 @@ package com.geekbrains.server;
 import com.geekbrains.server.handlers.ClientHandler;
 import com.geekbrains.server.services.AuthenticationService;
 import com.geekbrains.server.services.impl.SqlAuthenticationServiceImpl;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.log4j.Logger;
 
 
 import java.io.IOException;
@@ -12,16 +12,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-@Slf4j
+
 public class MyServer {
 
     private final ServerSocket serverSocket;
     private final AuthenticationService authenticationService;
     private final ArrayList<ClientHandler> clients;
 
+    private static Logger log = Logger.getLogger("file");
+
     public MyServer(int port) throws IOException {
         serverSocket = new ServerSocket(port);
-//        authenticationService = new SimpleAuthenticationServiceImpl();
         authenticationService = new SqlAuthenticationServiceImpl();
 
         clients = new ArrayList<>();
@@ -31,6 +32,7 @@ public class MyServer {
     public void start() {
         System.out.println("СЕРВЕР СТАРТОВАЛ!");
         System.out.println("________________");
+        log.info("Старт Сервера!");
 
 
         try {
@@ -83,15 +85,13 @@ public class MyServer {
         System.out.println("------------------");
         System.out.println("------------------");
         System.out.println("СЕРВЕР ЗАВЕРШИЛ РАБОТУ!");
+        log.info("Завершение работы сервера!");
         System.exit(0);
     }
 
 
     public void broadcastMessage(ClientHandler sender, String message) throws IOException {
         for (ClientHandler client : clients) {
-          /*  if (client == sender) {
-                continue;
-            }*/
             client.sendMessage(sender.getUsername(), message);
 
         }

@@ -3,14 +3,14 @@ package com.geekbrains.server.services.impl;
 
 import com.geekbrains.server.services.AuthenticationService;
 
-import org.slf4j.Logger;
+import org.apache.log4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 
 
 public class SqlAuthenticationServiceImpl implements AuthenticationService {
-    private static final Logger log = LoggerFactory.getLogger(SqlAuthenticationServiceImpl.class);
+    private static Logger log = Logger.getLogger("file");
 
     private static Connection connection;
     private static Statement stmt;
@@ -39,10 +39,9 @@ public class SqlAuthenticationServiceImpl implements AuthenticationService {
         ResultSet rs = null;
         try {
             rs = stmt.executeQuery(String.format("SELECT * from chatusers WHERE login = '%s'", login));
-            log.info(String.format("Логин который пришел в метод = %s%n Пароль который пришел в метод = %s%n", login, password));
-            log.info(String.format("RS  = %s%n", rs));
         } catch (SQLException e) {
             e.printStackTrace();
+            log.error("Ошибка запроса к БД!");
         }
 
         try {

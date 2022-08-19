@@ -3,8 +3,12 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/src/com/geekbrains/server/services/impl/SqlAuthenticationServiceImpl.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/resources/chatusers.db" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/resources/config" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/resources/db/chatusers.db" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/resources/lib/chatHistory.txt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/resources/logs" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/resources/logs/log4j.log" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/resources/logs/log4jAdmin.log" charset="windows-1251" />
     <file url="PROJECT" charset="windows-1251" />
   </component>
 </project>
